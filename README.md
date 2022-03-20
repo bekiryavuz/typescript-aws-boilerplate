@@ -19,7 +19,7 @@ npm install -g yarn
 
 
 ```
-$ git clone 
+$ git clone https://github.com/bekiryavuz/typescript-aws-boilerplate
 ```
 
 
