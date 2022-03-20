@@ -1,0 +1,65 @@
+service: typescript-aws-boilerplate
+frameworkVersion: "2"
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:DeleteItem"
+            - "dynamodb:GetItem"
+            - "dynamodb:Scan"
+          Resource:
+            - { "Fn::GetAtt": ["Assets", "Arn"] }
+functions:
+  createAsset:
+    handler: src/handlers.createAsset
+    events:
+      - httpApi:
+          path: /asset
+          method: post
+  deleteAsset:
+    handler: src/handlers.deleteAsset
+    events:
+      - httpApi:
+          path: /asset/{id}
+          method: delete
+  listAsset:
+    handler: src/handlers.listAsset
+    events:
+      - httpApi:
+          path: /assets
+          method: get
+  getAsset:
+    handler: src/handlers.getAsset
+    events:
+      - httpApi:
+          path: /asset/{id}
+          method: get
+  updateAsset:
+    handler: src/handlers.updateAsset
+    events:
+      - httpApi:
+          path: /asset/{id}
+          method: put
+plugins:
+  - serverless-plugin-typescript
+resources:
+  Resources:
+    Assets:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Assets
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        AttributeDefinitions:
+          - AttributeName: assetId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: assetId
+            KeyType: HASH
